@@ -1,4 +1,6 @@
 package test;
+import java.util.ArrayList;
+
 import quest.*;
 
 public class TestApp {
@@ -12,6 +14,20 @@ public class TestApp {
 		quest1.addChoice(new Choice("Tokyo", false ));
 		quest1.addChoice(new Choice("Paris", true ));
 		print_question(quest1);
+		
+		Question quest2 = new Question("What is the capital of Espagna "
+				, "is a european coutry");
+		quest2.addChoice(new Choice(new String("Mdrid"), true));
+		quest2.addChoice(new Choice("Buenos Aires", false ));
+		quest2.addChoice(new Choice("Shangai", false ));
+		quest2.addChoice(new Choice("Seoul", false ));
+		print_question(quest2);
+		
+		QuestionsList Geography = new QuestionsList("Geaography", new ArrayList<>());
+		Geography.addQuestion(quest1);
+		Geography.addQuestion(quest2);
+		
+		
 		
 		
 	}
@@ -38,4 +54,5 @@ public class TestApp {
 	public static void print_question_list(QuestionsList question_list) {
 		
 	}
+	
 }
