@@ -39,7 +39,8 @@ public class TestApp {
 		
 		*/
 		
-		xmlQuestListLoader.parse(new File("exemple.xml"));
+		QuestionsList list = xmlQuestListLoader.LoadQuestList(new File("exemple.xml")) ;
+		print_question_list(list);
 		
 		
 	}
@@ -64,7 +65,9 @@ public class TestApp {
 	}
 	
 	public static void print_question_list(QuestionsList question_list) {
-		
+		for(int i = 0 ; i < question_list.QuestionCount() ; i++ ) {
+			print_question(question_list.getQuestion(i));
+		}
 	}
 	
 }

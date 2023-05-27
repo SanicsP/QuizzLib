@@ -19,14 +19,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 public class xmlQuestListLoader {
 	
-	public static QuestionsList parse(File xmlFile) throws ParserConfigurationException, SAXException, IOException , XMLParseException {
-		
-		
+	public static String[] REQUIERED_TAGS = {"Enonce" , "Hint" , "Choice" , "Question"};
+	public static String REQUIERED_ROOT_ELMENT = "QuestionList";
+	public static String[] REQUIERED_ATTRIBUTES = {"theme" , "type"};
+	public static String[] REQUIERED_VALUES = {"good" , "wrong"};
+	
+	public static QuestionsList LoadQuestList(File xmlFile) throws ParserConfigurationException, SAXException, IOException , XMLParseException {
 		Document root_elemnt = parseFile(xmlFile);
-		QuestionsList list = getQuestionList(root_elemnt);
-		System.out.println(list.QuestionCount());
-		return null;
-		
+		return getQuestionList(root_elemnt);		
 	}
 	
 	private static Document parseFile(File xmlFile) throws ParserConfigurationException, SAXException, IOException {
@@ -40,15 +40,29 @@ public class xmlQuestListLoader {
 		return doc_build.parse(xmlFile);
 	}
 	
-	public static QuestionsList getQuestionList(Document doc) throws XMLParseException {
+	private static QuestionsList getQuestionList(Document doc) throws XMLParseException {
+		//String requiered_root_element = "QuestionList";
+		
+		//String[] requiered_attributes = {"theme"};
+		//String[] requiered_tags = {"Question"};
 		
 		Element root = (Element)doc.getDocumentElement();
 		
-		String theme= root.getAttribute("theme");
+		if(!root.getTagName().equals(REQUIERED_ROOT_ELMENT) ||
+			root.getAttributes().getLength() == 0
+				)
+			throw new XMLParseException("the root elemnt must be a" + REQUIERED_ROOT_ELMENT +" with theme attribute");
+		
+		else if (
+				root.getElementsByTagName(REQUIERED_TAGS[3]).getLength() == 0
+		)
+			throw new XMLParseException("QuestionList Elment must have " + REQUIERED_TAGS [3] +"Elements");
+		
+		String theme= root.getAttribute(REQUIERED_ATTRIBUTES[0]);
 		
 		QuestionsList quest_list = new QuestionsList(theme, new ArrayList<>());
 	
-		NodeList QuestionsTag = root.getElementsByTagName("Question");
+		NodeList QuestionsTag = root.getElementsByTagName(REQUIERED_TAGS[3]);
 		
 		for(int i = 0 ; i < QuestionsTag.getLength() ; i++)
 		{
@@ -58,27 +72,30 @@ public class xmlQuestListLoader {
 		return quest_list;
 	}
 	
-	public static Question getQuestion(Element question_tag) throws XMLParseException {
+	private static Question getQuestion(Element question_tag) throws XMLParseException {
+		
+		//String[] requiered_tags = {"enonce" , "hint" , "choice" , "Question"};
 		
 		if(
-				question_tag.getElementsByTagName("enonce").getLength() != 1 ||
-				question_tag.getElementsByTagName("hint").getLength() != 1 ||
-				question_tag.getElementsByTagName("choice").getLength() == 0
+				question_tag.getElementsByTagName(REQUIERED_TAGS[0]).getLength() != 1 ||
+				question_tag.getElementsByTagName(REQUIERED_TAGS[1]).getLength() != 1 ||
+				question_tag.getElementsByTagName(REQUIERED_TAGS[2]).getLength() == 0
 		)
-			throw new XMLParseException("Question Element need one enonce and hint Elemnt and need choices elements");
+			throw new XMLParseException(REQUIERED_TAGS[3] + " Element need one " + REQUIERED_TAGS[0] + 
+					" and " + REQUIERED_TAGS[1] + " Elemnt and need "+ REQUIERED_TAGS[2] +"elements");
 		
 		if(
-				question_tag.getElementsByTagName("enonce").item(0).getTextContent().equals("")
+				question_tag.getElementsByTagName(REQUIERED_TAGS[0]).item(0).getTextContent().equals("")
 				//|| question_tag.getElementsByTagName("hint").item(0).getTextContent().equals("")
 		)
-			throw new XMLParseException("Questions child Elements need text content");
+			throw new XMLParseException(REQUIERED_TAGS[3] +" child Elements need text content");
 		
 		
 		Question return_quest = new Question(
-				question_tag.getElementsByTagName("enonce").item(0).getTextContent() , 
-				question_tag.getElementsByTagName("hint").item(0).getTextContent()
+				question_tag.getElementsByTagName(REQUIERED_TAGS[0]).item(0).getTextContent() , 
+				question_tag.getElementsByTagName(REQUIERED_TAGS[1]).item(0).getTextContent()
 				);
-		NodeList ChoicesTag = question_tag.getElementsByTagName("choice");
+		NodeList ChoicesTag = question_tag.getElementsByTagName(REQUIERED_TAGS[2]);
 		
 		for(int i = 0 ; i < ChoicesTag.getLength() ; i++)
 		{
@@ -89,18 +106,22 @@ public class xmlQuestListLoader {
 		
 	}
 	
-	public static Choice getChoice (Element choiceTag) throws XMLParseException {
+	private static Choice getChoice (Element choiceTag) throws XMLParseException {
+		
+		String[] requiered_values = {"good" , "wonrg"};
+		
+		String type_attribute = "type";
 		
 		boolean isgood = false;
 		
-		String type_attrib = choiceTag.getAttribute("type");
+		String type_attrib = choiceTag.getAttribute(REQUIERED_ATTRIBUTES[1]);
 		
 		if(type_attrib.equals(""))
 			throw new XMLParseException("the choice need type attr");
 		
-		if(type_attrib.equals("good"))
+		if(type_attrib.equals(REQUIERED_VALUES[0]))
 			isgood = true;
-		else if(!type_attrib.equals("wrong") ||
+		else if(!type_attrib.equals(REQUIERED_VALUES[1]) ||
 				choiceTag.getTextContent().equals(""))
 			throw new XMLParseException("the type attribute dont have a good value : wrong or good");
 
