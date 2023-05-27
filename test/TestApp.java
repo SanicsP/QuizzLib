@@ -1,12 +1,22 @@
 package test;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.management.modelmbean.XMLParseException;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
 
 import quest.*;
 
+
+
 public class TestApp {
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException , XMLParseException
 	{
+		/*
 		Question quest1 = new Question("What is the capital of France"
 				, "is a european coutry");
 		quest1.addChoice(new Choice(new String("Mdrid"), false));
@@ -27,7 +37,9 @@ public class TestApp {
 		Geography.addQuestion(quest1);
 		Geography.addQuestion(quest2);
 		
+		*/
 		
+		xmlQuestListLoader.parse(new File("exemple.xml"));
 		
 		
 	}
